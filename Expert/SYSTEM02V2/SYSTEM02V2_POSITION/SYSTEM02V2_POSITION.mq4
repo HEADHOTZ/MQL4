@@ -23,6 +23,7 @@ input  ORDER_POSITION POSITION = L;
 input bool TRALINGSTOP = false;
 input bool SAFE_TP = false;
 input int MONEY = 10000;
+input bool USE_ACCOUNTBALANCE = false;
 
 double lotBuy,lotSell;
 
@@ -64,34 +65,65 @@ void OnTick()
    double tpBuy = (close - psar) * TP;
    double tpSell = ((psar - close) * TP);
 
-   double risk = MONEY * (RISK / 100);
-
    if(err == false)
      {
-      if(Symbol() == "XAUUSD")
+      if(USE_ACCOUNTBALANCE == true)
         {
-         lotBuy = risk / ((close - psar) * 100);
-         lotSell = risk / ((psar - close) * 100);
-        }
+         double risk = AccountBalance() * (RISK / 100);
 
-      else
-         if(Symbol() == "XAGUSD")
+         if(Symbol() == "XAUUSD")
            {
-            lotBuy = risk / ((close - psar) * 5000);
-            lotSell = risk / ((psar - close) * 5000);
+            lotBuy = risk / ((close - psar) * 100);
+            lotSell = risk / ((psar - close) * 100);
            }
 
          else
+            if(Symbol() == "XAGUSD")
+              {
+               lotBuy = risk / ((close - psar) * 5000);
+               lotSell = risk / ((psar - close) * 5000);
+              }
+
+            else
+              {
+               lotBuy = risk / diffBuy;
+               lotSell = risk / diffSell;
+              }
+
+         if(lotBuy < 0.01)
+            lotBuy = 0.01;
+         if(lotSell < 0.01)
+            lotSell = 0.01;
+
+        }
+      if(USE_ACCOUNTBALANCE == false)
+        {
+         double risk = MONEY * (RISK / 100);
+
+         if(Symbol() == "XAUUSD")
            {
-            lotBuy = risk / diffBuy;
-            lotSell = risk / diffSell;
+            lotBuy = risk / ((close - psar) * 100);
+            lotSell = risk / ((psar - close) * 100);
            }
 
-      if(lotBuy < 0.01)
-         lotBuy = 0.01;
-      if(lotSell < 0.01)
-         lotSell = 0.01;
+         else
+            if(Symbol() == "XAGUSD")
+              {
+               lotBuy = risk / ((close - psar) * 5000);
+               lotSell = risk / ((psar - close) * 5000);
+              }
 
+            else
+              {
+               lotBuy = risk / diffBuy;
+               lotSell = risk / diffSell;
+              }
+
+         if(lotBuy < 0.01)
+            lotBuy = 0.01;
+         if(lotSell < 0.01)
+            lotSell = 0.01;
+        }
       //--- BUY CODITION   ---//
       if(close < psar)
          buyOnce = true;
