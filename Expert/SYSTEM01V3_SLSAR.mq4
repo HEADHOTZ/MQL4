@@ -14,7 +14,6 @@ input double PSAR = 0.01;
 input int EMA = 200;
 input bool TRALINGSTOP = false;
 input bool SAFE_TP = false;
-input int BB_DEVI = 2;
 input int MONEY = 10000;
 
 double lotBuy,lotSell;
@@ -85,7 +84,7 @@ void OnTick()
          lotSell = 0.01;
 
       //--- BUY CODITION   ---//
-      if(close < psar && OrdersTotal() == 0)
+      if(close < psar)
          buyOnce = true;
 
       if(close > psar && close > valveEMA)
@@ -93,7 +92,7 @@ void OnTick()
          signal = "Buy";
         }
       //--- SELL  CONDITION   ---//
-      if(close > psar && OrdersTotal() == 0)
+      if(close > psar)
          sellOnce = true;
 
       if(close < psar && close < valveEMA)
@@ -105,7 +104,6 @@ void OnTick()
         {
          int ticket = OrderSend(Symbol(),OP_BUY,lotBuy,Ask,5,psar,Ask + tpBuy,NULL,0,0,clrGreen);
          buyOnce = false;
-         sellOnce = false;
         }
 
       //--- SELL  ORDER ---//
@@ -113,7 +111,6 @@ void OnTick()
         {
          int ticket = OrderSend(Symbol(),OP_SELL,lotSell,Bid,5,psar,Bid - tpSell,NULL,0,0,clrRed);
          sellOnce = false;
-         buyOnce = false;
         }
 
       //--- ZONE  HELPER   ---//
